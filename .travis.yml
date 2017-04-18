@@ -1,0 +1,14 @@
+services:
+  - docker
+branches:
+  except:
+    - gh-pages
+before_script:
+- travis_retry docker-compose run setup
+script:
+- docker-compose run sbt bash -c "./build/build.sh"
+cache:
+  directories:
+  - $HOME/.ivy2/cache
+  - $HOME/.sbt/boot/
+sudo: false
