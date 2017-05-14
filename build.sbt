@@ -1,24 +1,28 @@
 import ReleaseTransformations._
 import com.typesafe.sbt.SbtScalariform.ScalariformKeys
-import sbt.Resolver.mavenLocal
-
 import scalariform.formatter.preferences._
+import sbt.Resolver.mavenLocal
 import sbtrelease.ReleasePlugin
 
-val quillVersion = "1.1.1"
-
-val scalaV = "2.11.8"
-//scalaOrganization in ThisBuild := "org.typelevel"
-scalaVersion := scalaV
-val pprintVersion = "0.4.4"
+val quillVersion = "1.2.1"
 
 lazy val `quill-trait` =
-  crossProject.crossType(superPure)
+  (project in file("."))
+    .settings(commonSettings: _*)
+    .settings(tutSettings: _*)
+    .dependsOn(
+      `quill-trait-core-jvm`, `quill-trait-core-js`
+    ).aggregate(
+      `quill-trait-core-jvm`, `quill-trait-core-js`
+    ).enablePlugins(TutPlugin)
+
+lazy val `quill-trait-core` =
+  crossProject.crossType(CrossType.Full)
     .settings(commonSettings: _*)
     .settings(mimaSettings: _*)
     .settings(libraryDependencies ++= Seq(
-      "com.lihaoyi" %%% "pprint" % pprintVersion,
       "io.getquill" %%% "quill-core" % quillVersion,
+      "io.getquill" %% "quill-sql" % quillVersion % "test",
       "io.getquill" %% "quill-async-mysql" % quillVersion % "test",
       "io.getquill" %% "quill-async-postgres" % quillVersion % "test",
       "io.getquill" %% "quill-cassandra" % quillVersion % "test",
@@ -27,25 +31,39 @@ lazy val `quill-trait` =
       "org.scala-lang"             %  "scala-reflect" % scalaVersion.value
     ))
     .jsSettings(
-      libraryDependencies += "org.scala-js" %%% "scalajs-java-time" % "0.2.0",
+      libraryDependencies ++= Seq(
+        "org.scala-js" %%% "scalajs-java-time" % "0.2.0"
+      ),
       coverageExcludedPackages := ".*"
     ).jvmSettings(
       fork in Test := true
     )
 
-lazy val `quill-trait-jvm` = `quill-trait`.jvm
-lazy val `quill-trait-js` = `quill-trait`.js
+lazy val `quill-trait-core-jvm` = `quill-trait-core`.jvm
+lazy val `quill-trait-core-js` = `quill-trait-core`.js
 
-lazy val superPure = new org.scalajs.sbtplugin.cross.CrossType {
-  def projectDir(crossBase: File, projectType: String): File =
-    projectType match {
-      case "jvm" => crossBase
-      case "js"  => crossBase / s".$projectType"
-    }
+lazy val tutSources = Seq(
+  "README.md"
+)
 
-  def sharedSrcDir(projectBase: File, conf: String): Option[File] =
-    Some(projectBase.getParentFile / "src" / conf / "scala")
-}
+lazy val tutSettings = Seq(
+  libraryDependencies ++= Seq(
+    "io.getquill" %% "quill-sql" % quillVersion % "tut"
+  ),
+  scalacOptions in Tut := scalacOptions.value.filterNot(Set("-Ywarn-unused-import")),
+  tutSourceDirectory := baseDirectory.value / "target" / "tut",
+  tutNameFilter := tutSources.map(_.replaceAll("""\.""", """\.""")).mkString("(", "|", ")").r,
+  sourceGenerators in Compile +=
+    Def.task {
+      tutSources.foreach { name =>
+        val source = baseDirectory.value / name
+        val file = baseDirectory.value / "target" / "tut" / name
+        val str = IO.read(source).replace("```scala", "```tut")
+        IO.write(file, str)
+      }
+      Seq()
+    }.taskValue
+)
 
 lazy val mimaSettings = MimaPlugin.mimaDefaultSettings ++ Seq(
   mimaPreviousArtifacts := {
@@ -60,7 +78,8 @@ lazy val mimaSettings = MimaPlugin.mimaDefaultSettings ++ Seq(
 
 lazy val commonSettings = ReleasePlugin.extraReleaseCommands ++ Seq(
   organization := "com.nikolastojiljkovic",
-  scalaVersion := scalaV,
+  scalaVersion := "2.11.11",
+  crossScalaVersions := Seq("2.11.11"),
   libraryDependencies ++= Seq(
     "org.scalamacros" %% "resetallattrs"  % "1.0.0",
     "org.scalatest"   %%% "scalatest"     % "3.0.1"     % Test,
@@ -92,12 +111,10 @@ lazy val commonSettings = ReleasePlugin.extraReleaseCommands ++ Seq(
     "JBoss Repository" at "https://repository.jboss.org/nexus/content/repositories/",
     "Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/",
     "Scala-Tools Snapshots" at "http://scala-tools.org/repo-snapshots/"
-//    ,
-//    "Essential Dots Artifactory" at "http://artifactory.essentialdots.com/artifactory/sbt-local/"
   ),
   concurrentRestrictions in Global += Tags.limit(Tags.Test, 1),
-  releasePublishArtifactsAction := PgpKeys.publishSigned.value,
-  scoverage.ScoverageKeys.coverageMinimum := 96,
+  // releasePublishArtifactsAction := PgpKeys.publishSigned.value,
+  scoverage.ScoverageKeys.coverageMinimum := 75,
   scoverage.ScoverageKeys.coverageFailOnMinimum := false,
   ScalariformKeys.preferences := ScalariformKeys.preferences.value
     .setPreference(AlignParameters, true)
@@ -125,8 +142,6 @@ lazy val commonSettings = ReleasePlugin.extraReleaseCommands ++ Seq(
     else
       Some("releases"  at nexus + "service/local/staging/deploy/maven2")
   },
-//  pgpSecretRing := file("local.secring.gpg"),
-//  pgpPublicRing := file("local.pubring.gpg"),
   releaseProcess := Seq[ReleaseStep](
     checkSnapshotDependencies,
     inquireVersions,

@@ -20,7 +20,7 @@ docker-compose run --rm setup
 After that, just run the command bellow to build and test the project.
 
 ```
-docker-compose run --rm sbt sbt "quill-traitJVM/test"
+docker-compose run --rm sbt sbt test
 ```
 
 ## Changing database schema
@@ -38,12 +38,12 @@ docker-compose stop && docker-compose rm && docker-compose run --rm setup
 
 Run all tests:
 ```
-docker-compose run --rm sbt sbt "quill-traitJVM/test"
+docker-compose run --rm sbt sbt test
 ```
 
 Run specific test:
 ```
-docker-compose run --rm sbt sbt "project quill-traitJVM" "test-only com.nikolastojiljkovic.quill.QueryMetaSpec"
+docker-compose run --rm sbt sbt "project quill-trait-coreJVM" "test-only com.nikolastojiljkovic.quilltrait.QueryMetaSpec"
 ```
 
 ### Debugging tests
@@ -57,5 +57,5 @@ change it port to 15005.
 
 3. In sbt command line run tests with `test` or test specific spec by passing full name to `test-only`:
 ```
-> quill-traitJVM/test-only com.nikolastojiljkovic.quill.QueryMetaSpec
+> quill-trait-coreJVM/test-only com.nikolastojiljkovic.quilltrait.QueryMetaSpec
 ```

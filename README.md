@@ -37,8 +37,6 @@ case class Page(
 Sample: 
 
 ```scala
-import com.nikolastojiljkovic.annotation.Field
-
 @Table("page")
 trait SeoSupport {
   this: Page =>
@@ -70,9 +68,11 @@ Any Quill context (MySQL, PostgreSQL, Cassandra...) can be used as long as trait
 
 ```scala
 import io.getquill._
-import com.nikolastojiljkovic.quill._
+import com.nikolastojiljkovic.quilltrait._
 
-val ctx = new MysqlAsyncContext[MysqlEscape]("testMysqlDB") with AnnotatedTraitSupport
+val ctx = new SqlMirrorContext[MirrorSqlDialect, Literal] with AnnotatedTraitSupport
+
+import ctx._
 ```
 
 As table and column names are defined in annotations, it is recommended to use appropriate `*Escape
