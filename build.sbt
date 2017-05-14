@@ -77,7 +77,7 @@ lazy val mimaSettings = MimaPlugin.mimaDefaultSettings ++ Seq(
 )
 
 lazy val commonSettings = ReleasePlugin.extraReleaseCommands ++ Seq(
-  organization := "com.nikolastojiljkovic",
+  organization := "com.github.nstojiljkovic",
   scalaVersion := "2.11.11",
   crossScalaVersions := Seq("2.11.11"),
   libraryDependencies ++= Seq(
@@ -113,7 +113,7 @@ lazy val commonSettings = ReleasePlugin.extraReleaseCommands ++ Seq(
     "Scala-Tools Snapshots" at "http://scala-tools.org/repo-snapshots/"
   ),
   concurrentRestrictions in Global += Tags.limit(Tags.Test, 1),
-  // releasePublishArtifactsAction := PgpKeys.publishSigned.value,
+  releasePublishArtifactsAction := PgpKeys.publishSigned.value,
   scoverage.ScoverageKeys.coverageMinimum := 75,
   scoverage.ScoverageKeys.coverageFailOnMinimum := false,
   ScalariformKeys.preferences := ScalariformKeys.preferences.value
@@ -146,13 +146,12 @@ lazy val commonSettings = ReleasePlugin.extraReleaseCommands ++ Seq(
     checkSnapshotDependencies,
     inquireVersions,
     runClean,
-    runTest,
     setReleaseVersion,
     // updateReadmeVersion(_._1),
     commitReleaseVersion,
-    //updateWebsiteTag,
+    // updateWebsiteTag,
     tagRelease,
-    ReleaseStep(action = Command.process("publishSigned", _)),
+    publishArtifacts,
     setNextVersion,
     // updateReadmeVersion(_._2),
     commitNextVersion,
