@@ -54,7 +54,8 @@ class AnnotatedTraitSupportBlackboxMacro(val c: MacroContext) {
     val value = this.value("Decoder", cTag.tpe)
     q"""
       new ${c.prefix}.QueryMeta[$cTag] {
-        val expand = ${expandQuery[C](value)}
+        private[this] val _expand = ${expandQuery[C](value)}
+        def expand = _expand
         val extract = ${extract[C](value)}
       }
     """
@@ -85,10 +86,11 @@ class AnnotatedTraitSupportBlackboxMacro(val c: MacroContext) {
 
     q"""
       new ${c.prefix}.SchemaMeta[${cTag.tpe}] {
-        val entity =
+        private[this] val _entity =
           ${c.prefix}.quote(
               ${c.prefix}.querySchema[${cTag.tpe}]($tableName, ..$fields)
           )
+        def entity = _entity
       }
     """
   }
@@ -136,8 +138,9 @@ class AnnotatedTraitSupportBlackboxMacro(val c: MacroContext) {
     c.untypecheck {
       q"""
         new ${c.prefix}.${TypeName(method.capitalize + "Meta")}[$t] {
-          val expand =
+          private[this] val _expand =
             ${c.prefix}.quote((q: ${c.prefix}.EntityQuery[$t], value: $t) => q.${TermName(method)}(..$assignments))
+          def expand = _expand
         }
       """
     }

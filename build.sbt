@@ -104,7 +104,7 @@ def updateReadmeVersion(selectVersion: sbtrelease.Versions => String) =
 lazy val commonSettings = ReleasePlugin.extraReleaseCommands ++ Seq(
   organization := "com.github.nstojiljkovic",
   scalaVersion := "2.11.11",
-  crossScalaVersions := Seq("2.11.11"),
+  crossScalaVersions := Seq("2.11.11", "2.12.2"),
   libraryDependencies ++= Seq(
     "org.scalamacros" %% "resetallattrs"  % "1.0.0",
     "org.scalatest"   %%% "scalatest"     % "3.0.1"     % Test,
@@ -117,19 +117,23 @@ lazy val commonSettings = ReleasePlugin.extraReleaseCommands ++ Seq(
   ),
   EclipseKeys.eclipseOutput := Some("bin"),
   scalacOptions ++= Seq(
-    "-Xfatal-warnings",
     "-deprecation",
     "-encoding", "UTF-8",
     "-feature",
     "-unchecked",
-    "-Xlint",
     "-Yno-adapted-args",
     "-Ywarn-dead-code",
     "-Ywarn-numeric-widen",
     "-Ywarn-value-discard",
-    "-Xfuture",
-    "-Ywarn-unused-import"
+    "-Xfuture"
   ),
+  scalacOptions ++= {
+    CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((2, 11)) => Seq("-Xfatal-warnings", "-Xlint", "-Ywarn-unused-import")
+      case Some((2, 12)) => Seq("-Xlint:-unused,_", "-Ywarn-unused:imports")
+      case _ => Seq()
+    }
+  },
   resolvers ++= Seq(
     mavenLocal,
     "Restlet Repository" at "http://maven.restlet.org/",
