@@ -129,6 +129,18 @@ val d = quote {
 ctx.run(d)
 ```
 
+### Installation
+
+Add `quill-trait-core` to sbt dependencies:
+
+```
+libraryDependencies ++= Seq(
+  "com.github.nstojiljkovic" %% "quill-trait-core" % "0.1.2-SNAPSHOT"
+)
+```
+
+Library `quill-trait-core` works with any Quill context (MySQL, PostgreSQL, JDBC, Cassandra, even Scala.js).
+
 ## How does it work?
 
 Quill allows customizing of expansion and execution handling of quotations through implicit 
@@ -144,19 +156,15 @@ on the annotations.
 * Write more test cases
 * Move annotations to a separate library
 * Create macro for using copy with Quill-core annotated traits
-* Find a way to enforce compile-time queries wherever is possible
 
-Contributing
-------------
+## Contributing
 
 See the [CONTRIBUTING.md](https://github.com/nstojiljkovic/quill-trait/blob/master/CONTRIBUTING.md) file for details.
 
-License
--------
+## License
 
 See the [LICENSE](https://github.com/nstojiljkovic/quill-trait/blob/master/LICENSE) file for details.
 
-Maintainers
-===========
+## Maintainers
 
 - @nstojiljkovic

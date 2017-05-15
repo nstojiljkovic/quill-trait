@@ -76,6 +76,31 @@ lazy val mimaSettings = MimaPlugin.mimaDefaultSettings ++ Seq(
   }
 )
 
+def updateReadmeVersion(selectVersion: sbtrelease.Versions => String) =
+  ReleaseStep(action = st => {
+
+    val newVersion = selectVersion(st.get(ReleaseKeys.versions).get)
+
+    import scala.io.Source
+    import java.io.PrintWriter
+
+    val pattern = """"com.github.nstojiljkovic" %% "quill-trait-.*" % "(.*)"""".r
+
+    val fileName = "README.md"
+    val content = Source.fromFile(fileName).getLines.mkString("\n")
+
+    val newContent =
+      pattern.replaceAllIn(content,
+        m => m.matched.replaceAllLiterally(m.subgroups.head, newVersion))
+
+    new PrintWriter(fileName) { write(newContent); close }
+
+    val vcs = Project.extract(st).get(releaseVcs).get
+    vcs.add(fileName).!
+
+    st
+  })
+
 lazy val commonSettings = ReleasePlugin.extraReleaseCommands ++ Seq(
   organization := "com.github.nstojiljkovic",
   scalaVersion := "2.11.11",
@@ -147,13 +172,13 @@ lazy val commonSettings = ReleasePlugin.extraReleaseCommands ++ Seq(
     inquireVersions,
     runClean,
     setReleaseVersion,
-    // updateReadmeVersion(_._1),
+    updateReadmeVersion(_._1),
     commitReleaseVersion,
     // updateWebsiteTag,
     tagRelease,
     publishArtifacts,
     setNextVersion,
-    // updateReadmeVersion(_._2),
+    updateReadmeVersion(_._2),
     commitNextVersion,
     ReleaseStep(action = Command.process("sonatypeReleaseAll", _)),
     pushChanges
