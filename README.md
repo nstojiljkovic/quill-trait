@@ -5,6 +5,7 @@ Support for using of annotated case classes with arbitrary number of traits as
 
 [![Build Status](https://travis-ci.org/nstojiljkovic/quill-trait.svg?branch=master)](https://travis-ci.org/nstojiljkovic/quill-trait)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/c48cf4b7fa9a4772acbc7134d51f2681)](https://www.codacy.com/app/nstojiljkovic/quill-trait?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=nstojiljkovic/quill-trait&amp;utm_campaign=Badge_Grade)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.nstojiljkovic/quill-trait_2.11/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.nstojiljkovic/quill-trait_2.11)
 
 This documentation assumes you are already familiar with [Quill](http://getquill.io/) 
 and that you have read its [documentation](http://getquill.io/).
