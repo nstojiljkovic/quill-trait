@@ -140,7 +140,7 @@ Add `quill-trait-core` to sbt dependencies:
 
 ```
 libraryDependencies ++= Seq(
-  "com.github.nstojiljkovic" %% "quill-trait-core" % "0.1.2"
+  "com.github.nstojiljkovic" %% "quill-trait-core" % "0.1.3-SNAPSHOT"
 )
 ```
 
