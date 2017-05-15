@@ -12,6 +12,10 @@ and that you have read its [documentation](http://getquill.io/).
 
 ## What does it do?
 
+The main goal of this library is to allow extending of base domain models using traits. The requirement come from
+developing a rapid-application-development-framework/content-management-system where core package's domain models 
+should be easily extendable by a a 3rd party libraries.
+
 ### Use annotations to define table/column names
 
 Sample:
@@ -76,7 +80,7 @@ val ctx = new SqlMirrorContext[MirrorSqlDialect, Literal] with AnnotatedTraitSup
 import ctx._
 ```
 
-As table and column names are defined in annotations, it is recommended to use appropriate `*Escape
+As table and column names are defined in annotations, it is recommended to use appropriate `*Escape`
 naming strategy designated for the selected Quill context.
 
 Context with trait `AnnotatedTraitSupport` can accept annotated case classes and traits the same way
